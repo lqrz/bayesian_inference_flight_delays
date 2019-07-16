@@ -24,21 +24,14 @@ def get_df_flights(data_path):
     df_flights = pd.read_csv(data_path)
     df_flights = df_flights.loc[~(df_flights.ARRIVAL_DELAY.isna())]
     df_flights = df_flights.loc[~(df_flights.MONTH.isin([10]))]
-    # all airlines showup in the 1st month already (i will use this month to encode them)
-    # assert len(set(df_flights['AIRLINE']).difference(set(df_flights.loc[df_flights.MONTH==1, 'AIRLINE']))) == 0
-    #
-    # df_airline_encoding = df_flights.loc[df_flights.MONTH==1, ['AIRLINE', 'ARRIVAL_DELAY']].groupby(by='AIRLINE').mean().rename(columns={'ARRIVAL_DELAY': 'AIRLINE_MEAN_ENCODING'})
-    # df_data = pd.merge(df_flights, df_airline_encoding, left_on='AIRLINE', right_index=True)
 
     col_features = [
-        #     'DEP_MINOFDAY', 'ARR_MINOFDAY',
         'DISTANCE', 'DEP_LONGITUDE_SIN', 'DEP_LONGITUDE_COS', 'DEP_LATITUDE_SIN',
         'DEP_LATITUDE_COS', 'DEST_LONGITUDE_SIN', 'DEST_LONGITUDE_COS',
         'DEST_LATITUDE_SIN', 'DEST_LATITUDE_COS', 'DEP_MINOFDAY_SIN',
         'DEP_MINOFDAY_COS', 'ARR_MINOFDAY_SIN', 'ARR_MINOFDAY_COS',
         'DAYWEEK_SIN', 'DAYWEEK_COS', 'DAYMONTH_SIN', 'DAYMONTH_COS',
         'destAirFreq', 'depAirFreq'
-        #     ,'AIRLINE_MEAN_ENCODING'
     ]
     col_target = ['ARRIVAL_DELAY']
     cols_to_scale = ['DISTANCE', 'destAirFreq', 'depAirFreq']
@@ -52,7 +45,6 @@ def get_df_flights(data_path):
 
     df_train = df_flights.loc[df_flights.MONTH.isin(month_train)]
     df_test = df_flights.loc[df_flights.MONTH.isin(month_test)]
-
 
     # get datasets
     x_train = np.hstack(
@@ -108,7 +100,6 @@ class OneLayerRegressionModel(nn.Module):
         return torch.relu(self.linear_1(x)) + 1e-3
 
 
-# def model(dataset_total_length, batch_size, x_data, y_data):
 def model(dataset_total_length, x_data, y_data):
     priors = generate_nnet_priors()
     # scale = pyro.sample('sigma', Uniform(0., 10.))
