@@ -40,7 +40,7 @@ def get_df_flights(data_path):
 
     # month_train = list(range(1, 2))
     # month_test = [2]
-    month_train = list(range(1, 11))
+    month_train = list(range(1, 10)) # do not use month 10.
     month_test = [11, 12]
 
     df_train = df_flights.loc[df_flights.MONTH.isin(month_train)]
